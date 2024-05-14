@@ -18,6 +18,16 @@ interface IMangaSearchResult {
   }[]
 }
 
+interface IMangaGetBuyResult {
+  msg: string
+  code: number
+  data: {
+    comic_id: number
+    comic_title: string
+    vcover: string
+  }[]
+}
+
 interface IMangaSeason {
   id: number
   title: string
@@ -75,6 +85,16 @@ async function setMangaListFilterOptions () {
         filterOption.options.push(...newOptions)
       }
     })
+
+    result.push({
+      label: '已购漫画', 
+      name: 'paid', 
+      options: 
+      [
+          {label: '全部', value: '-1' },
+          {label: '仅显示已购', value: '1' }
+      ]
+    });
 
     window.Rulia.endWithResult(result)
   } catch (error) {
@@ -173,6 +193,40 @@ async function getMangaListBySearching (page: number, pageSize: number, keyword:
   }
 }
 
+async function getMangaListByGetAutoBuyComics (page: number, pageSize: number) {
+  const url = 'https://manga.bilibili.com/twirp/user.v1.User/GetAutoBuyComics?device=pc&platform=web'
+  try {
+    const rawResponse = await window.Rulia.httpRequest({
+      url,
+      method: 'POST',
+      payload: JSON.stringify({
+        page_num: page,
+        page_size: pageSize
+      }),
+      contentType: 'application/json'
+    })
+
+    const response = JSON.parse(rawResponse) as IMangaGetBuyResult;
+
+    if (response.code !== 0) {
+      throw new Error('SERVER_RESPONSE_CODE_' + response.code)
+    }
+
+    const result: IGetMangaListResult = {
+      list: response.data.map(item => {
+        return {
+          title: item.comic_title,//replace(/<.*?>/g, ''),
+          url: `https://manga.bilibili.com/detail/mc${item.comic_id}`,
+          coverUrl: item.vcover//vertical_cover + '@500w.jpg'
+        }
+      })
+    }
+    window.Rulia.endWithResult(result)
+  } catch (error) {
+    window.Rulia.endWithException((error as Error).message)
+  }
+};
+
 /**
  * Get manga list for manga list page.
  * This function will be invoked by Rulia in the manga list page.
@@ -200,6 +254,11 @@ async function getMangaList (page: string, pageSize: string, keyword?: string, r
     } catch (error) {
       filterOptions = {}
     }
+  }
+  if (filterOptions.paid == '1')
+  {
+      //pass;
+      return await getMangaListByGetAutoBuyComics(pageNum, pageSizeNum);
   }
   return await getMangaListByCategory(pageNum, pageSizeNum, filterOptions)
 }

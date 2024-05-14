@@ -15,7 +15,7 @@
     "@rulia/types": "^0.1.1",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
-    "archiver": "^6.0.1",
+    "archiver": "^6.0.2",
     "eslint": "^8.48.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-standard-with-typescript": "^39.0.0",
