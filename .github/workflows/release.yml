@@ -1,17 +1,21 @@
 name: Main
-
 on: push
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
       - name: Build
-        run: zip -r bilibili-manga-dev.zip ./src
+        run: node build.js
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V0.3.${{ github.run_id }}
-          files: bilibili-manga-dev.zip
+          tag_name: V0.3.${{ github.run_id }}-dev
+          files: ./dist/bilibili-manga.v0.3.0.zip
