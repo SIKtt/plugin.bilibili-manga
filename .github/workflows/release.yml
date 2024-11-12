@@ -17,5 +17,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V0.3.${{ github.run_id }}-dev
+          tag_name: V0.3.0.${{ github.run_id }}-dev
           files: ./dist/bilibili-manga.v0.3.0.zip
