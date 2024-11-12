@@ -413,7 +413,7 @@ async function getImageUrl (path: string) {
     const token = response.data?.[0]?.token ?? ''
     const complete_url = response.data?.[0]?.complete_url ?? ''
     
-    if (!imageUrl || !token && !complete_url) {
+    if ((!imageUrl || !token) && !complete_url) {
       throw new Error('NO_IMAGE_URL_OR_TOKEN')
     }
     if (!complete_url){
