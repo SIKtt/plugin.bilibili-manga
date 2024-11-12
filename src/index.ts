@@ -407,17 +407,21 @@ async function getImageUrl (path: string) {
       payload: JSON.stringify(payload),
       contentType: 'application/json'
     })
-    const response = JSON.parse(rawResponse) as IBilibiliApi<{url: string, token: string}[]>
+    const response = JSON.parse(rawResponse) as IBilibiliApi<{url: string, token: string, complete_url: string}[]>
 
     const imageUrl = response.data?.[0]?.url ?? ''
     const token = response.data?.[0]?.token ?? ''
-
-    if (!imageUrl || !token) {
+    const complete_url = response.data?.[0]?.complete_url ?? ''
+    
+    if (!imageUrl || !token && !complete_url) {
       throw new Error('NO_IMAGE_URL_OR_TOKEN')
     }
+    if (!complete_url){
+      const fullUrl = imageUrl + '?token=' + token
+      window.Rulia.endWithResult(fullUrl)
+    }
+    window.Rulia.endWithResult(complete_url)
 
-    const fullUrl = imageUrl + '?token=' + token
-    window.Rulia.endWithResult(fullUrl)
   } catch (error) {
     window.Rulia.endWithException((error as Error).message)
   }
