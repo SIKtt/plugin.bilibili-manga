@@ -398,7 +398,7 @@ async function getImageUrl (path: string) {
     }
 
     const payload = {
-      urls: JSON.stringify([path + quality])
+      urls: JSON.stringify([path])
     }
 
     const rawResponse = await window.Rulia.httpRequest({
